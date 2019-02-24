@@ -1,0 +1,2 @@
+# PythonLib
+Some usefull functions
