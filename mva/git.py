@@ -5,20 +5,68 @@ if (sys.version_info[0] != 3):
 	print("This script requires Python version 3.x")
 	exit(1)
 
+class GitFile:
+	def __init__(self, hash, name, type):
+		self.hash = hash
+		self.name = name
+		self.type = type
+		self.childs = []
+	def __str__(self):
+		return self.path + " (" + self.type + ") " + self.hash
+
+class GitTree:
+	def __init__(self):
+		self.findMap = {}
+		self.root = GitFile("root", "", "dir")
+
+	def Add(self, gitFile, parent):
+		if (parent == None):
+			parent = self.root
+		else:
+			parent = self.findMap[parent]
+
+		if (gitFile.type == "dir"):
+			if (not gitFile.hash in self.findMap):		#new dir
+				self.findMap[gitFile.hash] = gitFile		#add to map
+
+		parent.childs.append(gitFile)				#it's a dir - check for existence in map and add a ref.
+													#A file - just add
+	def GetFiles(self, hash = None, basePath = ""):
+		ret = []
+		if (hash == None):
+			node = self.root
+		else:
+			node = self.findMap[hash]
+
+		for i in node.childs:
+			name = i.name
+			if (basePath != ""):
+				name = basePath + "/" + name
+			if (i.type == "dir"):
+				ret = ret + self.GetFiles(i.hash, name)
+			else:
+				ret.append((i.hash, name))
+		return ret
 
 def CheckIndexSignature(indexData):
+	if (len(indexData) < 4):
+		return False
 	signature = struct.unpack(">L", indexData[0:4])[0]
 	if (signature != 0x44495243):
 		return False
 	return True
 
 def GetIndexVersion(indexData):
+	if (len(indexData) < 4):
+		return False
 	return struct.unpack(">L", indexData[4:8])[0]
 
 def GetIndexElementsCount(indexData):
+	if (len(indexData) < 4):
+		return False
 	return struct.unpack(">L", indexData[0x8:0xC])[0]
 
-def GetIndexElements(indexData):
+def GetIndexFileObjs(indexData):
 	currentPos = 0x0C
 	ret = []
 	
@@ -36,7 +84,7 @@ def GetIndexElements(indexData):
 		name = indexData[currentPos + entrieSize:currentPos + entrieSize + nameLen]
 		name = name.decode(errors = "replace")
 
-		ret.append((hash, name, "file"))
+		ret.append(GitFile(hash, name, "file"))
 		
 		entrieSize = entrieSize + nameLen + 1 		#len + name + terminating zero
 		
@@ -47,7 +95,7 @@ def GetIndexElements(indexData):
 		indexEntriesCount = indexEntriesCount - 1
 	return ret
 	
-def GetTreeElements(treeData):
+def GetTreeFileObjs(treeData):
 	ret = []
 	while(1):
 		if (len(treeData) == 0):
@@ -61,7 +109,7 @@ def GetTreeElements(treeData):
 		
 		name = treeData[startPos+1:endPos].decode(errors = "replace")
 		hash = treeData[endPos+1:endPos+21].hex()
-		ret.append((hash, name, type))
+		ret.append(GitFile(hash, name, type))
 		
 		treeData = treeData[endPos+21:]
 
