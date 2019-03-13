@@ -18,17 +18,18 @@ MB		= 7		#experimental
 MG		= 8		#experimental
 MR		= 9		#experimental
 NULL	= 10	#experimental
-WKS		= 11
-PTR		= 12
-HINFO	= 13
-MINFO	= 14
-MX		= 15
-TXT		= 16
-RP		= 17
-AAAA	= 28
-SRV		= 33
-NAPTR	= 35
+WKS			= 11
+PTR			= 12
+HINFO		= 13
+MINFO		= 14
+MX			= 15
+TXT			= 16
+RP			= 17
+AAAA		= 28
+SRV			= 33
+NAPTR		= 35
 DS			= 43
+SSHFP 		= 44
 RRSIG		= 46
 NSEC		= 47
 DNSKEY		= 48
@@ -43,7 +44,7 @@ TYPES = {0: "UNKNOWN", 1: "A", 2: "NS", 3: "MD", 4: "MF", 5: "CNAME", 6: "SOA", 
 		10 : "NULL", 11 : "WKS", 12 : "PTR", 13 : "HINFO", 14 : "MINFO", 15 : "MX", 16 : "TXT", 17: "RP",
 		28: "AAAA",
 		33: "SRV", 35: "NAPTR",
-		43: "DS", 46: "RRSIG", 47: "NSEC", 48: "DNSKEY",
+		43: "DS", 44: "SSHFP", 46: "RRSIG", 47: "NSEC", 48: "DNSKEY",
 		50: "NSEC3", 51: "NSEC3PARAM", 52: "TLSA",
 		61: "OPENPGPKEY",
 		99: "SPF",
