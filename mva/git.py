@@ -1,25 +1,27 @@
 import sys
 import struct
 
+from typing import List, Tuple, Set
+
 if (sys.version_info[0] != 3):
 	print("This script requires Python version 3.x")
 	exit(1)
 
 class GitFile:
-	def __init__(self, hash, name, type):
+	def __init__(self, hash: bytes, name: str, type: str) -> None:
 		self.hash = hash
 		self.name = name
 		self.type = type
 		self.childs = []
-	def __str__(self):
+	def __str__(self) -> str:
 		return self.path + " (" + self.type + ") " + self.hash
 
 class GitTree:
-	def __init__(self):
+	def __init__(self) -> None:
 		self.findMap = {}
 		self.root = GitFile("root", "", "dir")
 
-	def Add(self, gitFile, parent):
+	def Add(self, gitFile, parent: bytes) -> None:
 		if (parent == None):
 			parent = self.root
 		else:
@@ -31,7 +33,7 @@ class GitTree:
 
 		parent.childs.append(gitFile)				#it's a dir - check for existence in map and add a ref.
 													#A file - just add
-	def GetFiles(self, hash = None, basePath = ""):
+	def GetFiles(self, hash: bytes = None, basePath: str = "") -> List[Tuple[bytes, str]]:
 		ret = []
 		if (hash == None):
 			node = self.root
@@ -48,7 +50,7 @@ class GitTree:
 				ret.append((i.hash, name))
 		return ret
 
-def CheckIndexSignature(indexData):
+def CheckIndexSignature(indexData: bytes) -> bool:
 	if (len(indexData) < 4):
 		return False
 	signature = struct.unpack(">L", indexData[0:4])[0]
@@ -56,17 +58,17 @@ def CheckIndexSignature(indexData):
 		return False
 	return True
 
-def GetIndexVersion(indexData):
+def GetIndexVersion(indexData: bytes) -> int:
 	if (len(indexData) < 4):
 		return False
 	return struct.unpack(">L", indexData[4:8])[0]
 
-def GetIndexElementsCount(indexData):
+def GetIndexElementsCount(indexData: bytes) -> int:
 	if (len(indexData) < 4):
 		return False
 	return struct.unpack(">L", indexData[0x8:0xC])[0]
 
-def GetIndexFileObjs(indexData):
+def GetIndexFileObjs(indexData: bytes) -> List[GitFile]:
 	currentPos = 0x0C
 	ret = []
 	
@@ -95,7 +97,7 @@ def GetIndexFileObjs(indexData):
 		indexEntriesCount = indexEntriesCount - 1
 	return ret
 	
-def GetTreeFileObjs(treeData):
+def GetTreeFileObjs(treeData: bytes) -> List[GitFile]:
 	ret = []
 	while(1):
 		if (len(treeData) == 0):
@@ -113,7 +115,7 @@ def GetTreeFileObjs(treeData):
 		
 		treeData = treeData[endPos+21:]
 
-def GetObjectType(objData):
+def GetObjectType(objData: str) -> str:
 	pos = objData.find(0x20)
 	if (pos == -1):
 		return None

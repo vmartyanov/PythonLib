@@ -18,22 +18,22 @@ else:
 
 import datetime
 
-def TimeString():
+def TimeString() -> str:
 	return datetime.datetime.now().strftime("[%H:%M:%S]")
 	
-def Info(string, logToFile = True):
+def Info(string: str, logToFile: bool = True) -> None:
 	Output(string, "[INFO]", 0x02, logToFile)
 
-def Warning(string, logToFile = True):
+def Warning(string: str, logToFile: bool = True) -> None:
 	Output(string, "[WARNING]", 0x06, logToFile)
 
-def Error(string, logToFile = True):
+def Error(string: str, logToFile: bool = True) -> None:
 	Output(string, "[ERROR]", 0x04, logToFile)
 
-def Result(string, logToFile = True):
+def Result(string: str, logToFile: bool = True) -> None:
 	Output(string, "[RESULT]", 0x03, logToFile)
 
-def Output(string, marker, colorCode, logToFile):
+def Output(string: str, marker: str, colorCode: int, logToFile: bool) -> None:
 	tmpString = TimeString() + " " + marker + " " + string
 	
 	if (fileName != "" and logToFile == True):
