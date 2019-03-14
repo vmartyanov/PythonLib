@@ -40,6 +40,8 @@ OPENPGPKEY	= 61
 SPF			= 99
 AXFR		= 252
 CAA			= 257
+
+PRIV65534	= 65534
 TYPES = {0: "UNKNOWN", 1: "A", 2: "NS", 3: "MD", 4: "MF", 5: "CNAME", 6: "SOA", 7: "MB", 8 : "MG", 9 : "MR",
 		10 : "NULL", 11 : "WKS", 12 : "PTR", 13 : "HINFO", 14 : "MINFO", 15 : "MX", 16 : "TXT", 17: "RP",
 		28: "AAAA",
@@ -48,7 +50,8 @@ TYPES = {0: "UNKNOWN", 1: "A", 2: "NS", 3: "MD", 4: "MF", 5: "CNAME", 6: "SOA", 
 		50: "NSEC3", 51: "NSEC3PARAM", 52: "TLSA",
 		61: "OPENPGPKEY",
 		99: "SPF",
-		252: "AXFR", 257: "CAA"
+		252: "AXFR", 257: "CAA",
+		65534: "PRIV65534"
 		}
 
 #OPCODES
