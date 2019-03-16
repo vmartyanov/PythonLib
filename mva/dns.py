@@ -385,48 +385,51 @@ def Query(domain, type, server = "8.8.8.8", port = 53, timeout = 2, recursive = 
 		answers.append(foo.RDATA)
 		
 	return answers
-	
+
 def AXFRquery(domain, server, port = 53, timeout = 2, recursive = True):
 	answers = []
-	
+
 	header = DNSheader()
 	header.OPCODE = QUERY
 	header.QDCOUNT = 1
 	if (recursive == True):
 		header.RD = 1
-	
+
 	question = DNSQuestion()
 	question.NAME = domain
 	question.QTYPE = AXFR
 	question.QCLASS = IN
-	
+
 	#RFC 5936
 	sock = TCPAXFRQueryBegin(server, port, timeout, header.ToBytes() + question.ToBytes())
 	if (sock == None):
 		return answers
-	
+
+	state = "WAIT_FIRST"
 	while(1):
 		rawMessage = TCPAXFRQueryNext(sock)
 		if (len(rawMessage) <= 2):
 			break
 		rawMessage = rawMessage [2:]			#remove len prefix
-		
+
 		answerHeader = DNSheader().FromBytes(rawMessage, 0)
 		pos = len(answerHeader)
 		if (answerHeader.RCODE != R_OK):
 			break
-		
+
 		for i in range(answerHeader.QDCOUNT):
 			rq = DNSQuestion().FromBytes(rawMessage, pos)
 			pos = pos + len(rq)
-		
+
 		for i in range(answerHeader.ANCOUNT):
 			foo = DNSAnswer(rawMessage, pos)
 			pos = pos + len(foo)
 			answers.append(foo)
-		
-		if (answers[-1].TYPE == SOA):
+
+		if (state == "WAIT_FIRST" and answers[0].TYPE == SOA):
+			state = "WAIT_LAST"
+		elif (state == "WAIT_LAST" and answers[-1].TYPE == SOA):
 			break
-	
+
 	sock.close()
 	return answers
