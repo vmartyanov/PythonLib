@@ -22,9 +22,18 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 proxies = {}
 
-def GET(url, timeout = None, redirects = True):
+def GET(url, timeout = None, redirects = True, userAgent = None):
 	global proxies
-	return requests.get(url, proxies=proxies, timeout = timeout, verify = False, allow_redirects = redirects)
+
+	headers = {}
+	if (userAgent != None):
+		headers['User-Agent'] = userAgent
+
+	return requests.get(url, proxies=proxies,
+					timeout = timeout,
+					verify = False,
+					allow_redirects = redirects,
+					headers = headers)
 
 def SetProxy(proxyType, proxyHost, proxyPort):
 	global proxies
