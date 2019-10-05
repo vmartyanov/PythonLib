@@ -414,7 +414,7 @@ def AXFRquery(domain, server, port = 53, timeout = 2, recursive = True):
 
 		answerHeader = DNSheader().FromBytes(rawMessage, 0)
 		pos = len(answerHeader)
-		if (answerHeader.RCODE != R_OK):
+		if (answerHeader.RCODE != R_OK or answerHeader.ANCOUNT == 0):		#It can be 0 ANCOUNT with OK status
 			break
 
 		for i in range(answerHeader.QDCOUNT):
