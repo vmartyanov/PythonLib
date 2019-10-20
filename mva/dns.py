@@ -319,7 +319,10 @@ def UDPQuery(server, port, timeout, data):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	sock.settimeout(timeout)
 	sock.sendto(data, (server, port))
-	out = sock.recv(512)
+	try:
+		out = sock.recv(512)
+	except socket.timeout:    #server doesn't respond
+		return None
 	return out
 
 def TCPAXFRQueryBegin(server, port, timeout, data):
@@ -356,20 +359,22 @@ def TCPAXFRQueryNext(sock):
 
 def Query(domain, type, server = "8.8.8.8", port = 53, timeout = 2, recursive = True):
 	answers = []
-	
+
 	header = DNSheader()
 	header.OPCODE = QUERY
 	header.QDCOUNT = 1
 	if (recursive == True):
 		header.RD = 1
-	
+
 	question = DNSQuestion()
 	question.NAME = domain
 	question.QTYPE = type
 	question.QCLASS = IN
-	
+
 	rawAnswer = UDPQuery(server, port, timeout, header.ToBytes() + question.ToBytes())
-	
+	if (rawAnswer is None):
+		return answers
+
 	answerHeader = DNSheader().FromBytes(rawAnswer, 0)
 	pos = len(answerHeader)
 
