@@ -26,6 +26,7 @@ MX			= 15
 TXT			= 16
 RP			= 17
 AAAA		= 28
+LOC			= 29
 SRV			= 33
 NAPTR		= 35
 DS			= 43
@@ -44,7 +45,7 @@ CAA			= 257
 PRIV65534	= 65534
 TYPES = {0: "UNKNOWN", 1: "A", 2: "NS", 3: "MD", 4: "MF", 5: "CNAME", 6: "SOA", 7: "MB", 8 : "MG", 9 : "MR",
 		10 : "NULL", 11 : "WKS", 12 : "PTR", 13 : "HINFO", 14 : "MINFO", 15 : "MX", 16 : "TXT", 17: "RP",
-		28: "AAAA",
+		28: "AAAA", 29: "LOC",
 		33: "SRV", 35: "NAPTR",
 		43: "DS", 44: "SSHFP", 46: "RRSIG", 47: "NSEC", 48: "DNSKEY",
 		50: "NSEC3", 51: "NSEC3PARAM", 52: "TLSA",
@@ -327,7 +328,7 @@ def UDPQuery(server, port, timeout, data):
 
 def TCPAXFRQueryBegin(server, port, timeout, data):
 	data = struct.pack("!H", len(data)) + data
-	
+
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.settimeout(timeout)
 	try:
@@ -335,7 +336,7 @@ def TCPAXFRQueryBegin(server, port, timeout, data):
 		sock.sendall(data)
 	except:
 		return None
-	
+
 	return sock
 
 def TCPAXFRQueryNext(sock):
@@ -350,7 +351,7 @@ def TCPAXFRQueryNext(sock):
 				break
 			if (portionLen > 1024):
 				portionLen = 1024
-			
+
 			data = sock.recv(portionLen)
 			ret = ret + data
 	except:
@@ -381,14 +382,14 @@ def Query(domain, type, server = "8.8.8.8", port = 53, timeout = 2, recursive = 
 	for i in range(answerHeader.QDCOUNT):
 		rq = DNSQuestion().FromBytes(rawAnswer, pos)
 		pos = pos + len(rq)
-		
+
 	for i in range(answerHeader.ANCOUNT):
 		foo = DNSAnswer(rawAnswer, pos)
 		pos = pos + len(foo)
 		if (foo.TYPE != type):			#Yes, we can receive some extra records with other types
 			continue
 		answers.append(foo.RDATA)
-		
+
 	return answers
 
 def AXFRquery(domain, server, port = 53, timeout = 2, recursive = True):
