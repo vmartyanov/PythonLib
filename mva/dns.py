@@ -1,3 +1,6 @@
+#RFC 1035
+
+
 import sys
 if (sys.version_info[0] != 3):
 	print("This script requires Python version 3.x")
@@ -29,6 +32,7 @@ AAAA		= 28
 LOC			= 29
 SRV			= 33
 NAPTR		= 35
+DNAME		= 39
 DS			= 43
 SSHFP 		= 44
 RRSIG		= 46
@@ -46,7 +50,7 @@ PRIV65534	= 65534
 TYPES = {0: "UNKNOWN", 1: "A", 2: "NS", 3: "MD", 4: "MF", 5: "CNAME", 6: "SOA", 7: "MB", 8 : "MG", 9 : "MR",
 		10 : "NULL", 11 : "WKS", 12 : "PTR", 13 : "HINFO", 14 : "MINFO", 15 : "MX", 16 : "TXT", 17: "RP",
 		28: "AAAA", 29: "LOC",
-		33: "SRV", 35: "NAPTR",
+		33: "SRV", 35: "NAPTR", 39: "DNAME",
 		43: "DS", 44: "SSHFP", 46: "RRSIG", 47: "NSEC", 48: "DNSKEY",
 		50: "NSEC3", 51: "NSEC3PARAM", 52: "TLSA",
 		61: "OPENPGPKEY",
